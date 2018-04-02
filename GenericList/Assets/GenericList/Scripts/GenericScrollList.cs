@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,8 +8,8 @@ using UnityEngine.UI;
 /// </summary>
 public class GenericScrollList<T> : MonoBehaviour where T : MonoBehaviour
 {
-	#region INSPECTOR
-	[SerializeField] protected 	RectTransform		m_scrollRect	= null;
+    #region INSPECTOR
+    [SerializeField] protected  ScrollRect          m_scroll        = null;	
 	[SerializeField] protected 	GridLayoutGroup 	m_gridLayout 	= null;
 	[SerializeField] protected 	T 					m_elementPrefab = null;
 	#endregion
@@ -17,21 +17,34 @@ public class GenericScrollList<T> : MonoBehaviour where T : MonoBehaviour
 	#region PRIVATE
 	private List<T> 		m_elements 		= new List<T>();
 	private RectTransform	m_contentRect 	= null;
-	private float			m_minSize		= 0.0f;
-	#endregion
+    private float			m_minSize		= 0.0f;
+    #endregion
+
+    protected RectTransform m_scrollRect        = null;
+    protected Action        m_onReachEndOfList  = null;
 
 	protected virtual void Awake()
 	{
-		//get rect
+        //get rect
+        m_scrollRect    = m_scroll.GetComponent<RectTransform>();
 		m_contentRect 	= m_gridLayout.GetComponent<RectTransform>();
 		m_minSize		= m_contentRect.rect.size.y;
 
+        //set listener for end of list
+        m_scroll.onValueChanged.AddListener(delegate (Vector2 v) 
+        {
+            if (m_scroll.verticalNormalizedPosition <= 0.0f && m_onReachEndOfList != null)
+            {
+                m_onReachEndOfList();               
+            }
+        });
 	}
 
-	/// <summary>
-	/// add element to scroll list
-	/// </summary>
-	private void AddElement(T element)
+    
+    /// <summary>
+    /// add element to scroll list
+    /// </summary>
+    private void AddElement(T element)
 	{
 		m_elements.Add(element);	
 		//resize list to fit new element

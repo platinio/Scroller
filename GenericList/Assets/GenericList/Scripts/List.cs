@@ -10,15 +10,19 @@ public class List : GenericScrollList<Cell>
 	private void Start()
 	{
 		//add elements
-		/*
+		
 		for(int n = 0 ; n < m_numberOfElements ; n++)
 		{
 			Cell cell = CreateElement();
 			cell.elementName = n.ToString();
 		}
-		*/
-
-		StartCoroutine( CO_Test() );
+        
+        m_onReachEndOfList += delegate
+        {
+            Debug.Log("reached end of list");
+        };
+        
+		
 
 	}
 
