@@ -8,10 +8,17 @@ using UnityEngine.UI;
 /// </summary>
 public class GenericScrollList<T> : MonoBehaviour where T : MonoBehaviour
 {
+    public enum ScrollMode
+    {
+        Horizontal,
+        Vertical
+    }
+
     #region INSPECTOR
     [SerializeField] protected ScrollRect scroll = null;
     [SerializeField] protected GridLayoutGroup gridLayout = null;
     [SerializeField] protected T elementPrefab = null;
+    [SerializeField] protected ScrollMode scrollMode = ScrollMode.Horizontal;
     #endregion
 
     #region PRIVATE
@@ -68,18 +75,42 @@ public class GenericScrollList<T> : MonoBehaviour where T : MonoBehaviour
     protected void ResizeContentRect()
     {
 
+        float size = 0.0f;
 
-        //desire height
-        float height = ( gridLayout.cellSize.y + gridLayout.spacing.y ) * elements.Count;
+        if (scrollMode == ScrollMode.Horizontal)
+        {
+            size = ( gridLayout.cellSize.x + gridLayout.spacing.x ) * elements.Count;
+        }
+        else if (scrollMode == ScrollMode.Vertical)
+        {
+            size = ( gridLayout.cellSize.y + gridLayout.spacing.y ) * elements.Count;
+        }
 
         //resize contentRect to fit new element
-        if (height > minSize)
+        if (size > minSize)
         {
-            contentRect.SetSizeWithCurrentAnchors( RectTransform.Axis.Vertical, height );
+            if (scrollMode == ScrollMode.Vertical)
+            {
+                contentRect.SetSizeWithCurrentAnchors( RectTransform.Axis.Vertical, size );
+            }
+            else if (scrollMode == ScrollMode.Horizontal)
+            {
+                contentRect.SetSizeWithCurrentAnchors( RectTransform.Axis.Horizontal, size );
+            }
+
 
             //reposition
             Vector2 pos = contentRect.anchoredPosition;
-            contentRect.anchoredPosition = new Vector2( pos.x, pos.y - ( ( gridLayout.cellSize.y + gridLayout.spacing.y ) / 2.0f ) );
+
+            if (scrollMode == ScrollMode.Vertical)
+            {
+                contentRect.anchoredPosition = new Vector2( pos.x, pos.y - ( ( gridLayout.cellSize.y + gridLayout.spacing.y ) / 2.0f ) );
+            }
+            else if (scrollMode == ScrollMode.Horizontal)
+            {
+                contentRect.anchoredPosition = new Vector2( pos.x + ( ( gridLayout.cellSize.x + gridLayout.spacing.x ) / 2.0f ), pos.y );
+            }
+
         }
 
 
