@@ -1,31 +1,26 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
-public class List : GenericScrollList<Cell>
+public class List : MonoBehaviour
 {
-	[SerializeField] private int m_numberOfElements = 10;
+    [SerializeField] private int numberOfElements = 10;
+    [SerializeField] private Scroller scroller = null;
+    [SerializeField] private Cell cellPrefab = null;
 
 	private void Start()
 	{
 		//add elements
 		
-		for(int n = 0 ; n < m_numberOfElements ; n++)
+		for(int n = 0 ; n < numberOfElements ; n++)
 		{
-			Cell cell = CreateElement();
+			Cell cell = Instantiate( cellPrefab );
 			cell.ElementName = n.ToString();
-		}
-        
-        onReachEndOfList += delegate
-        {
-            Debug.Log("reached end of list");
-        };
-        
-		
+            scroller.AddElement(cell.gameObject);
+		}        
 
-	}
-
+	}   
+    /*
 	private IEnumerator CO_Test()
 	{
 		//create 10 elements one by one
@@ -48,6 +43,6 @@ public class List : GenericScrollList<Cell>
 			yield return new WaitForSeconds(0.2f);
 		}
 
-	}
+	}*/
 
 }

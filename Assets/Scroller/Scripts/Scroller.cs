@@ -6,7 +6,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Code to handle generic scroll list, like leaderboards or achievements
 /// </summary>
-public class GenericScrollList<T> : MonoBehaviour where T : MonoBehaviour
+public class Scroller : MonoBehaviour
 {
     public enum ScrollMode
     {
@@ -16,19 +16,23 @@ public class GenericScrollList<T> : MonoBehaviour where T : MonoBehaviour
 
     #region INSPECTOR
     [SerializeField] protected ScrollRect scroll = null;
-    [SerializeField] protected GridLayoutGroup gridLayout = null;
-    [SerializeField] protected T elementPrefab = null;
+    [SerializeField] protected GridLayoutGroup gridLayout = null;    
     [SerializeField] protected ScrollMode scrollMode = ScrollMode.Horizontal;
     #endregion
 
     #region PRIVATE
-    private List<T> elements = new List<T>();
+    private List<GameObject> elements = new List<GameObject>();
     private RectTransform contentRect = null;
     private float minSize = 0.0f;
     #endregion
 
     protected RectTransform scrollRect = null;
     protected Action onReachEndOfList = null;
+
+    public GridLayoutGroup GridLayout
+    {
+        get { return gridLayout; }
+    }
 
     protected virtual void Awake()
     {
@@ -51,24 +55,13 @@ public class GenericScrollList<T> : MonoBehaviour where T : MonoBehaviour
     /// <summary>
     /// add element to scroll list
     /// </summary>
-    private void AddElement(T element)
+    public void AddElement(GameObject element)
     {
+        element.transform.parent = gridLayout.transform;
         elements.Add( element );
-        //resize list to fit new element
         ResizeContentRect();
     }
-
-    /// <summary>
-    /// Creates new element and add it to the list
-    /// </summary>
-    /// <returns>The element.</returns>
-    protected T CreateElement()
-    {
-        T t = MonoBehaviour.Instantiate( elementPrefab, gridLayout.transform );
-        AddElement( t );
-        return t;
-    }
-
+    
     /// <summary>
     /// Resizes the content rect to fit new elements
     /// </summary>
@@ -126,7 +119,7 @@ public class GenericScrollList<T> : MonoBehaviour where T : MonoBehaviour
             Destroy( elements[n].gameObject );
         }
 
-        elements = new List<T>();
+        elements = new List<GameObject>();
         contentRect.SetSizeWithCurrentAnchors( RectTransform.Axis.Vertical, minSize );
     }
 
