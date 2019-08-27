@@ -36,10 +36,11 @@ public class Scroller : MonoBehaviour
 
     protected virtual void Awake()
     {
-        //get rect
         scrollRect = scroll.GetComponent<RectTransform>();
         contentRect = gridLayout.GetComponent<RectTransform>();
         minSize = contentRect.rect.size.y;
+
+        SetupScrollingComponets();
 
         //set listener for end of list
         scroll.onValueChanged.AddListener( delegate (Vector2 v)
@@ -51,6 +52,13 @@ public class Scroller : MonoBehaviour
          } );
     }
 
+    private void SetupScrollingComponets()
+    {
+        gridLayout.startAxis = scrollMode == ScrollMode.Horizontal ? GridLayoutGroup.Axis.Horizontal : GridLayoutGroup.Axis.Vertical;
+        scroll.vertical = scrollMode == ScrollMode.Vertical;
+        scroll.horizontal = scrollMode == ScrollMode.Horizontal;
+    }
+
 
     /// <summary>
     /// add element to scroll list
@@ -58,6 +66,7 @@ public class Scroller : MonoBehaviour
     public void AddElement(GameObject element)
     {
         element.transform.parent = gridLayout.transform;
+        element.transform.localScale = Vector3.one;
         elements.Add( element );
         ResizeContentRect();
     }

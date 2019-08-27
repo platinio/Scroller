@@ -14,12 +14,24 @@ public class List : MonoBehaviour
 		
 		for(int n = 0 ; n < numberOfElements ; n++)
 		{
-			Cell cell = Instantiate( cellPrefab );
-			cell.ElementName = n.ToString();
-            scroller.AddElement(cell.gameObject);
+            AddElement();
 		}        
 
-	}   
+	}
+
+    private void Update()
+    {
+        if (Input.GetKeyDown( KeyCode.Space ))
+            AddElement();
+    }
+
+    private void AddElement()
+    {
+        Cell cell = Instantiate( cellPrefab );
+        cell.ElementName = scroller.GridLayout.transform.childCount.ToString();
+        scroller.AddElement( cell.gameObject );
+    }
+
     /*
 	private IEnumerator CO_Test()
 	{
