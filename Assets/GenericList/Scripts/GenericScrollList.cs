@@ -9,94 +9,94 @@ using UnityEngine.UI;
 public class GenericScrollList<T> : MonoBehaviour where T : MonoBehaviour
 {
     #region INSPECTOR
-    [SerializeField] protected  ScrollRect          m_scroll        = null;	
-	[SerializeField] protected 	GridLayoutGroup 	m_gridLayout 	= null;
-	[SerializeField] protected 	T 					m_elementPrefab = null;
-	#endregion
-
-	#region PRIVATE
-	private List<T> 		m_elements 		= new List<T>();
-	private RectTransform	m_contentRect 	= null;
-    private float			m_minSize		= 0.0f;
+    [SerializeField] protected ScrollRect scroll = null;
+    [SerializeField] protected GridLayoutGroup gridLayout = null;
+    [SerializeField] protected T elementPrefab = null;
     #endregion
 
-    protected RectTransform m_scrollRect        = null;
-    protected Action        m_onReachEndOfList  = null;
+    #region PRIVATE
+    private List<T> elements = new List<T>();
+    private RectTransform contentRect = null;
+    private float minSize = 0.0f;
+    #endregion
 
-	protected virtual void Awake()
-	{
+    protected RectTransform scrollRect = null;
+    protected Action onReachEndOfList = null;
+
+    protected virtual void Awake()
+    {
         //get rect
-        m_scrollRect    = m_scroll.GetComponent<RectTransform>();
-		m_contentRect 	= m_gridLayout.GetComponent<RectTransform>();
-		m_minSize		= m_contentRect.rect.size.y;
+        scrollRect = scroll.GetComponent<RectTransform>();
+        contentRect = gridLayout.GetComponent<RectTransform>();
+        minSize = contentRect.rect.size.y;
 
         //set listener for end of list
-        m_scroll.onValueChanged.AddListener(delegate (Vector2 v) 
-        {
-            if (m_scroll.verticalNormalizedPosition <= 0.0f && m_onReachEndOfList != null)
-            {
-                m_onReachEndOfList();               
-            }
-        });
-	}
+        scroll.onValueChanged.AddListener( delegate (Vector2 v)
+         {
+             if (scroll.verticalNormalizedPosition <= 0.0f && onReachEndOfList != null)
+             {
+                 onReachEndOfList();
+             }
+         } );
+    }
 
-    
+
     /// <summary>
     /// add element to scroll list
     /// </summary>
     private void AddElement(T element)
-	{
-		m_elements.Add(element);	
-		//resize list to fit new element
-		ResizeContentRect();
-	}
+    {
+        elements.Add( element );
+        //resize list to fit new element
+        ResizeContentRect();
+    }
 
-	/// <summary>
-	/// Creates new element and add it to the list
-	/// </summary>
-	/// <returns>The element.</returns>
-	protected T CreateElement()
-	{
-		T t = MonoBehaviour.Instantiate( m_elementPrefab , m_gridLayout.transform );
-		AddElement(t);
-		return t;
-	}
+    /// <summary>
+    /// Creates new element and add it to the list
+    /// </summary>
+    /// <returns>The element.</returns>
+    protected T CreateElement()
+    {
+        T t = MonoBehaviour.Instantiate( elementPrefab, gridLayout.transform );
+        AddElement( t );
+        return t;
+    }
 
-	/// <summary>
-	/// Resizes the content rect to fit new elements
-	/// </summary>
-	protected void ResizeContentRect()
-	{
-
-
-		//desire height
-		float height = (m_gridLayout.cellSize.y + m_gridLayout.spacing.y ) * m_elements.Count;
-
-		//resize contentRect to fit new element
-		if(height > m_minSize)
-		{
-			m_contentRect.SetSizeWithCurrentAnchors( RectTransform.Axis.Vertical , height );
-
-			//reposition
-			Vector2 pos = m_contentRect.anchoredPosition;
-			m_contentRect.anchoredPosition = new Vector2( pos.x , pos.y - ( ( m_gridLayout.cellSize.y + m_gridLayout.spacing.y ) / 2.0f ) );
-		}
+    /// <summary>
+    /// Resizes the content rect to fit new elements
+    /// </summary>
+    protected void ResizeContentRect()
+    {
 
 
-	}
+        //desire height
+        float height = ( gridLayout.cellSize.y + gridLayout.spacing.y ) * elements.Count;
 
-	/// <summary>
-	/// Deletes all elements from list
-	/// </summary>
-	protected void ClearList()
-	{
-		for(int n = 0 ; n < m_elements.Count ; n++)
-		{
-			Destroy( m_elements[n].gameObject );
-		}
+        //resize contentRect to fit new element
+        if (height > minSize)
+        {
+            contentRect.SetSizeWithCurrentAnchors( RectTransform.Axis.Vertical, height );
 
-		m_elements = new List<T>();
-		m_contentRect.SetSizeWithCurrentAnchors( RectTransform.Axis.Vertical , m_minSize );
-	}
+            //reposition
+            Vector2 pos = contentRect.anchoredPosition;
+            contentRect.anchoredPosition = new Vector2( pos.x, pos.y - ( ( gridLayout.cellSize.y + gridLayout.spacing.y ) / 2.0f ) );
+        }
+
+
+    }
+
+    /// <summary>
+    /// Deletes all elements from list
+    /// </summary>
+    protected void ClearList()
+    {
+        for (int n = 0; n < elements.Count; n++)
+        {
+            Destroy( elements[n].gameObject );
+        }
+
+        elements = new List<T>();
+        contentRect.SetSizeWithCurrentAnchors( RectTransform.Axis.Vertical, minSize );
+    }
 
 }

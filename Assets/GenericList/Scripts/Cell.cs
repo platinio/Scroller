@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class Cell : MonoBehaviour
 {
-	[SerializeField] private Text m_elementName = null;
+	[SerializeField] private Text elementName = null;
 
 
-	public string elementName{ set { m_elementName.text = value; } }
+	public string ElementName{ set { elementName.text = value; } }
 }

@@ -14,10 +14,10 @@ public class List : GenericScrollList<Cell>
 		for(int n = 0 ; n < m_numberOfElements ; n++)
 		{
 			Cell cell = CreateElement();
-			cell.elementName = n.ToString();
+			cell.ElementName = n.ToString();
 		}
         
-        m_onReachEndOfList += delegate
+        onReachEndOfList += delegate
         {
             Debug.Log("reached end of list");
         };
@@ -32,7 +32,7 @@ public class List : GenericScrollList<Cell>
 		for(int n = 0 ; n < 10 ; n++)
 		{
 			Cell cell = CreateElement();
-			cell.elementName = n.ToString();
+			cell.ElementName = n.ToString();
 			yield return new WaitForSeconds(0.4f);
 		}
 
@@ -44,7 +44,7 @@ public class List : GenericScrollList<Cell>
 		for(int n = 0 ; n < 100 ; n++)
 		{
 			Cell cell = CreateElement();
-			cell.elementName = n.ToString();
+			cell.ElementName = n.ToString();
 			yield return new WaitForSeconds(0.2f);
 		}
 
