@@ -45,11 +45,16 @@ public class Scroller : MonoBehaviour
         //set listener for end of list
         scroll.onValueChanged.AddListener( delegate (Vector2 v)
          {
-             if (scroll.verticalNormalizedPosition <= 0.0f && onReachEndOfList != null)
+             if (GetNormalizedPosition() <= 0.0f && onReachEndOfList != null)
              {
                  onReachEndOfList();
              }
          } );
+    }
+
+    public float GetNormalizedPosition()
+    {
+        return scrollMode == ScrollMode.Horizontal ? scroll.horizontalNormalizedPosition : scroll.verticalNormalizedPosition;
     }
 
     private void SetupScrollingComponets()
