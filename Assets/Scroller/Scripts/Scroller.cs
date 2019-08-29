@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// Code to handle generic scroll list, like leaderboards or achievements
 /// </summary>
-public class Scroller : MonoBehaviour
+public class Scroller : MonoBehaviour , IPointerDownHandler , IPointerUpHandler , IPointerExitHandler
 {
     public enum ScrollMode
     {
@@ -16,14 +18,19 @@ public class Scroller : MonoBehaviour
 
     #region INSPECTOR
     [SerializeField] protected ScrollRect scroll = null;
-    [SerializeField] protected GridLayoutGroup gridLayout = null;    
+    [SerializeField] protected GridLayoutGroup gridLayout = null;
+    [SerializeField] protected RectTransform viewRect = null;
     [SerializeField] protected ScrollMode scrollMode = ScrollMode.Horizontal;
+    [SerializeField] protected bool shouldAling = false;
+    [SerializeField] protected float scrollVelocityThreshold = 0.2f;
     #endregion
 
     #region PRIVATE
     private List<GameObject> elements = new List<GameObject>();
     private RectTransform contentRect = null;
+    private Coroutine shouldAlingCoroutine = null;
     private float minSize = 0.0f;
+    private bool userInteraction = false;
     #endregion
 
     protected RectTransform scrollRect = null;
@@ -45,6 +52,15 @@ public class Scroller : MonoBehaviour
         //set listener for end of list
         scroll.onValueChanged.AddListener( delegate (Vector2 v)
          {
+             if (userInteraction && scroll.velocity.magnitude > scrollVelocityThreshold)
+             {
+                 
+                 if (shouldAlingCoroutine != null)
+                     StopCoroutine( shouldAlingCoroutine );
+                 shouldAlingCoroutine = StartCoroutine( ShouldAlingRoutine() );
+             }
+             
+
              if (GetNormalizedPosition() <= 0.0f && onReachEndOfList != null)
              {
                  onReachEndOfList();
@@ -75,7 +91,24 @@ public class Scroller : MonoBehaviour
         elements.Add( element );
         ResizeContentRect();
     }
+
+    private IEnumerator ShouldAlingRoutine()
+    {
+        while (scroll.velocity.magnitude > 0.00001f)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
+        AlingToCloserElement();
+    }
+
+    private void AlingToCloserElement()
+    {
+        userInteraction = false;
+        Debug.Log("Aligning to closer element");
+    }
     
+
     /// <summary>
     /// Resizes the content rect to fit new elements
     /// </summary>
@@ -137,5 +170,18 @@ public class Scroller : MonoBehaviour
         contentRect.SetSizeWithCurrentAnchors( RectTransform.Axis.Vertical, minSize );
     }
 
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        userInteraction = true;
+    }
 
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        userInteraction = false;
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        userInteraction = false;
+    }
 }
