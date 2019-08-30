@@ -4,6 +4,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Platinio.UI;
 
 /// <summary>
 /// Code to handle generic scroll list, like leaderboards or achievements
@@ -105,7 +106,9 @@ public class Scroller : MonoBehaviour , IPointerDownHandler , IPointerUpHandler 
     private void AlingToCloserElement()
     {
         userInteraction = false;
-        Debug.Log("Aligning to closer element");
+
+        Vector2 pos = elements[0].GetComponent<RectTransform>().FromAnchoredPositionToAbsolutePosition(viewRect);
+        Debug.Log(pos);
     }
     
 
